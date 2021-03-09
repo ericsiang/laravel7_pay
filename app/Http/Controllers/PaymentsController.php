@@ -2,30 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Order;
 //引用綠界SDK
-use ECPay_PaymentMethod as ECPayMethod;
 use ECPay_AllInOne as ECPay;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use ECPay_PaymentMethod as ECPayMethod;
 
 
 class PaymentsController extends Controller
 {
       //訂單付款
       public function checkout_order(Request $request){
-            $input=$request->all();
+            $input=$request->except(['_token','ecommerce_checkout_place_order']);
 
-            $user_id=Auth::guard('user_account')->user()->user_id;    
-
-            if(Auth::guard('user_account')->user()){
-
+            if(Auth::guard('pay_account')->user()){
+                $user_id=Auth::guard('pay_account')->user()->id;    
                 $input['user_id']=$user_id;
                 $input['order_no']='T'.time();
+                $input['order_total']=100;
+                $pay_way=$input['pay_way'];
+                unset($input['pay_way']);
                 $order=Order::create($input);
-                //dd($order);
+                
                 
                 $order_id=$order->order_id;
-                
-                
+               
+                switch($pay_way){
+                    case 'ecpay';
+                        $this->ECPay($order);
+                        break;
+                    case 'opay';
+                        $this->Opay($Opay);
+                        break;
+                }
 
 
                
@@ -107,19 +117,19 @@ class PaymentsController extends Controller
                 */
                 //產生訂單(auto submit至ECPay)
                 //dd($obj);
-                $obj->CheckOut();
+                return $obj->CheckOut();
                 //$Response =$obj->CheckOutString();
                 
                 // dd($Response);
             
             } catch (Exception $e) {
-                echo $e->getMessage();
+                return $e->getMessage();
             } 
     }
 
-    public function opay(Order $order){
+    public function Opay(Order $order){
         try {
-
+            dd($order);
             $obj = new OpayAllInOne();
     
             //服務參數
@@ -155,11 +165,58 @@ class PaymentsController extends Controller
             // $obj->SendExtend['ExecTimes']    = '2' ;    //執行次數，預設空字串
     
             //產生訂單(auto submit至OPay)
-            $obj->CheckOut();
+            return $obj->CheckOut();
     
         } catch (Exception $e) {
-            echo $e->getMessage();
+            return $e->getMessage();
         }
+    }
+
+    public function ecpayOrderStatus(Request $request){
+        return view('checkout_status');
+        /* 接收到的回傳陣列
+            array(
+                "CustomField1" => null,
+                "CustomField2" => null,
+                "CustomField3" => null,
+                "CustomField4" => null,
+                "MerchantID" => "2000132",
+                "MerchantTradeNo" => "T1576824229",
+                "PaymentDate" => "2019/12/20 14:44:57",
+                "PaymentType" => "Credit_CreditCard",
+                "PaymentTypeChargeFee" => "18",
+                "RtnCode" => "1",
+                "RtnMsg" => "Succeeded",
+                "SimulatePaid" => "0",
+                "StoreID" => null,
+                "TradeAmt" => "900",
+                "TradeDate" => "2019/12/20 14:43:52",
+                "TradeNo" => "1912201443520341",
+                "CheckMacValue" => "C8EF745A91ABDC0F5C58B716A807306D27DE5C37681B9FFB54EE16C2FEB5637C"
+            );
+        */ 
+
+        $order_no=$request->MerchantTradeNo;
+        if($request->RtnCode==1){
+            $order=Order::WHERE('order_no',$order_no)
+                            ->update([
+                                'order_status'=>1//交易成功
+                            ]);
+            $msg='訂單交易成功';                
+        }else{
+            $order=Order::WHERE('order_no',$order_no)
+                            ->update([
+                                'order_status'=>2//交易失敗
+                            ]);
+            $msg='訂單交易失敗';     
+        }                    
+        
+        $order=Order::WHERE('order_no',$order_no)->get(); //取得訂單資訊
+        //dd($order);
+        //$order_id=$order[0]->order_id;
+        //$OrderCarts=OrderCart::WHERE('order_id',$order_id)->get(); //取得訂單內購物車資訊
+        //dd($order_id);
+        return view('checkout_status',compact('order_no','msg'));
     }
 
 }

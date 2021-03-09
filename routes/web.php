@@ -26,6 +26,13 @@ Route::post('/signup','SignInController@register');
 Route::get('/logout','SignInController@logout');//登出
 
 
+//ECPAY接收位置
+Route::post('/callback', 'ECPayController@callback');
+Route::post('/ecpay/result', 'ECPayController@result');
+
+//接收回傳結果
+Route::get('/checkout_ecpay_status','PaymentsController@ecpayOrderStatus');
+
 Route::group(['middleware'=>['auth:pay_account']], function () {
     Route::get('/', function () {
         return view('welcome');
@@ -34,6 +41,9 @@ Route::group(['middleware'=>['auth:pay_account']], function () {
     Route::get('/check_out', function () {
         return view('pay');
     });
+
+    Route::post('/checkout/order','PaymentsController@checkout_order');
+  
   
 });
 

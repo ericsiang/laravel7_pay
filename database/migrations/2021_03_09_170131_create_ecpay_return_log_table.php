@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrderPaymentTable extends Migration
+class CreateEcpayReturnLogTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateOrderPaymentTable extends Migration
      */
     public function up()
     {
-        Schema::create('order_payment', function (Blueprint $table) {
-            $table->id();
+        Schema::create('ecpay_return_log', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->string('order_no');
-            $table->unsignedInteger('user_id')->default(0);
-            $table->Integer('order_total')->default(0);
-            $table->Integer('order_status')->default(0);
+            $table->string('RtnCode');
+            $table->longText('RtnMsg');
+            $table->longText('get_data');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateOrderPaymentTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('order_payment');
+        Schema::dropIfExists('ecpay_return_log');
     }
 }
