@@ -13,18 +13,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 /****************註冊、登入*****************/
 
 Route::get('/signin', function (){
     return view('login');
-});
+})->name('login');
 
 Route::post('/signin ','SignInController@checkLogin');
 Route::post('/signup','SignInController@register');
+Route::get('/logout','SignInController@logout');//登出
+
+
+Route::group(['middleware'=>['auth:pay_account']], function () {
+    Route::get('/', function () {
+        return view('welcome');
+    });
+
+    Route::get('/check_out', function () {
+        return view('pay');
+    });
+  
+});
 
 
 /****************註冊、登入*****************/

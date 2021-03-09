@@ -68,7 +68,7 @@
             @if (Route::has('login'))
                 <div class="top-right links">
                     @auth
-                        <a href="{{ url('/home') }}">Home</a>
+                        <a href="{{ url('/logout') }}">logout</a>
                     @else
                         <a href="{{ route('login') }}">Login</a>
 
@@ -86,7 +86,7 @@
 
                 <div class="links">
                     <a href="/signin">Login</a>
-                    <a href="/pay">選擇付款</a>
+                    <a href="/check_out">選擇付款</a>
                     <a href="https://github.com/ericsiang/laravel7_pay" target="_blank">GitHub</a>
                 </div>
             </div>
