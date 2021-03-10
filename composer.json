@@ -43,12 +43,16 @@
             "database/factories",
             "app/ECPaySDK",
             "app/OpaySDK"
+        ], 
+        "files": [
+            "app/OpaySDK/AllPay.Payment.Integration.php" 
         ]
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        } 
+       
         
     },
     "minimum-stability": "dev",

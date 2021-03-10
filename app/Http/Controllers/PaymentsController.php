@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use ECPay_AllInOne as ECPay;
 use ECPay_PaymentMethod as ECPayMethod;
 //引用歐付寶SDK
-use OpayAllInOne as Opay;
-use OpayEncryptType as OpayEncrypt;
+use OpayAllInOne;
+use OpayEncryptType;
 use Exception;
-use OpayPaymentMethod as OpayMethod;
+use OpayPaymentMethod;
 
 class PaymentsController extends Controller
 {
@@ -135,14 +135,14 @@ class PaymentsController extends Controller
     public function Opay(Order $order){
         try {
             //dd($order);
-            $obj = new \Opay();
+            $obj = new \OpayAllInOne();
     
             //服務參數
             $obj->ServiceURL  = "https://payment-stage.opay.tw/Cashier/AioCheckOut/V5";         //服務位置
             $obj->HashKey     = env('OPAY_HASHKEY','5294y06JbISpM5x9');                                                              //測試用Hashkey，請自行帶入OPay提供的HashKey
             $obj->HashIV      = env('OPAY_HASHIV','v77hoKGq4kWxNNIS');                                            //測試用HashIV，請自行帶入OPay提供的HashIV
             $obj->MerchantID  = '2000132';                                                      //測試用MerchantID，請自行帶入OPay提供的MerchantID
-            $obj->EncryptType = \OpayEncrypt::ENC_SHA256;                                    //CheckMacValue加密類型，請固定填入1，使用SHA256加密
+            $obj->EncryptType = \OpayEncryptType::ENC_SHA256;                                    //CheckMacValue加密類型，請固定填入1，使用SHA256加密
             $MerchantTradeNo = $order->order_no; //特店交易編號 我們這的訂單號碼
             //基本參數(請依系統規劃自行調整)
             $obj->Send['ReturnURL']         = env('OPAY_RETURN_URL');                                //付款完成通知回傳的網址
@@ -150,7 +150,7 @@ class PaymentsController extends Controller
             $obj->Send['MerchantTradeDate'] = date('Y/m/d H:i:s');                                    //交易時間
             $obj->Send['TotalAmount']       = $order->order_total;                                    //交易金額
             $obj->Send['TradeDesc']         = $order->order_no;                                       //交易描述
-            $obj->Send['ChoosePayment']     = \OpayMethod::Credit ;                             //付款方式:Credit
+            $obj->Send['ChoosePayment']     = \OpayPaymentMethod::Credit ;                             //付款方式:Credit
               
 
             //訂單的商品資料
