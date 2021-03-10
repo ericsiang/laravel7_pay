@@ -12,6 +12,10 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        //
+        //跳過csrf判斷的頁面
+        '/callback',
+        '/checkout_status',
+        '/checkout_ecpay_status',
+        '/ticket/*',
     ];
 }

@@ -81,13 +81,13 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Laravel  Side Project
                 </div>
 
                 <div class="links">
-                    <a href="/signin">Login</a>
-                    <a href="/check_out">選擇付款</a>
-                    <a href="https://github.com/ericsiang/laravel7_pay" target="_blank">GitHub</a>
+                    <a href="/orders"><h2>Order List</h2></a>
+                    <a href="/check_out"><h2>選擇付款</h2></a>
+                    <a href="https://github.com/ericsiang/laravel7_pay" target="_blank"><h2>GitHub</h2></a>
                 </div>
             </div>
         </div>

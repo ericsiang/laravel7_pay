@@ -41,13 +41,15 @@
         "classmap": [
             "database/seeds",
             "database/factories",
-            "app/ECPaySDK"
+            "app/ECPaySDK",
+            "app/OpaySDK"
         ]
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
         }
+        
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
