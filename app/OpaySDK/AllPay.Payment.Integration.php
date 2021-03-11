@@ -1,4 +1,4 @@
-<!-- SDK外殼，用來處理舊版檔名相容性問題 -->
+
 <?php
 
 include_once('Opay.Payment.Integration.php');
