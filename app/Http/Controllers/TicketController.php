@@ -11,10 +11,10 @@ class TicketController extends Controller
     public function buyTicket(Request $request, Ticket  $ticket)
     {   
         //開始交易
-        // DB::beginTransaction();
-        // try {
+        DB::beginTransaction();
+        try {
             //查詢時進行鎖表
-            //$ticket = Ticket::lockForUpdate()->find($ticket->id);
+            $ticket = Ticket::lockForUpdate()->find($ticket->id);
         
             // 檢查票券是否還有足夠數量
             if ($ticket->available_amount <= 0) {
@@ -27,22 +27,21 @@ class TicketController extends Controller
             $ticket->update([
                 'available_amount' => $ticket->available_amount - 1,
             ]);
-        
-            return [
-                'success' => true
-            ];
-        //     DB::commit();
 
-        //     return [
-        //         'success' => true
-        //     ];
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-        //     return [
-        //         'success' => false,
-        //         $e->getMessage()
-        //     ];
-        // }
+           
+        } catch (\Exception $e) {
+            DB::rollback();
+            return [
+                'success' => false,
+                $e->getMessage()
+            ];
+        }
+
+        DB::commit();
+
+        return [
+            'success' => true
+        ];
   
     }
 }

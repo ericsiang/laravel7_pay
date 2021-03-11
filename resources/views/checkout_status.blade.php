@@ -78,9 +78,9 @@
                     </tbody>
                   </table>
 
-                  <div class="form-row place-order">
+                  {{-- <div class="form-row place-order">
                       <a href="/" class="btn btn-lg btn-color btn-button" style="padding-top:15px;">Back control central</a>
-                  </div>
+                  </div> --}}
                 </div>
               </div> <!-- end order review -->
             </form>
