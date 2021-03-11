@@ -16,6 +16,8 @@ class VerifyCsrfToken extends Middleware
         '/callback',
         '/checkout_status',
         '/checkout_ecpay_status',
+        '/checkout_opay_status',
         '/ticket/*',
+        
     ];
 }
