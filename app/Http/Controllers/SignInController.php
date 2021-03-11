@@ -43,10 +43,10 @@ class SignInController extends Controller
         if($validator->passes())
         {   
             $input=$request->except(['_token','re_password']);
-            
+            $input['provider']='一般';
             //密碼加密
             $input['password']=Hash::make($input['password']);
-
+        
             PayAccount::create($input);
             return redirect('/signin')
                                 ->with('msg','加入成功');;
