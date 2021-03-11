@@ -146,6 +146,7 @@ class PaymentsController extends Controller
             $MerchantTradeNo = $order->order_no; //特店交易編號 我們這的訂單號碼
             //基本參數(請依系統規劃自行調整)
             $obj->Send['ReturnURL']         = env('OPAY_RETURN_URL');                                //付款完成通知回傳的網址
+            $obj->Send['OrderResultURL']    = env('OPAY_RETURN_URL');
             $obj->Send['MerchantTradeNo']   = $MerchantTradeNo ;                                      //訂單編號
             $obj->Send['MerchantTradeDate'] = date('Y/m/d H:i:s');                                    //交易時間
             $obj->Send['TotalAmount']       = $order->order_total;                                    //交易金額
@@ -161,7 +162,7 @@ class PaymentsController extends Controller
             $obj->SendExtend['CreditInstallment'] = '' ;   //分期期數，預設0(不分期)，信用卡分期可用參數為:3,6,12,18,24
             $obj->SendExtend['Redeem'] = false ;           //是否使用紅利折抵，預設false
             $obj->SendExtend['UnionPay'] = false;          //是否為聯營卡，預設false;
-    
+            //dd($obj);
             //Credit信用卡定期定額付款延伸參數(可依系統需求選擇是否代入)
             //以下參數不可以跟信用卡分期付款參數一起設定
             // $obj->SendExtend['PeriodAmount'] = '2000' ; //每次授權金額，預設空字串
@@ -222,6 +223,52 @@ class PaymentsController extends Controller
         //$OrderCarts=OrderCart::WHERE('order_id',$order_id)->get(); //取得訂單內購物車資訊
         //dd($order_id);
         return view('checkout_status',compact('order_no','msg'));
+    }
+
+    public function opayOrderStatus(Request $request){
+        $input=$request->all();
+        //dd($input);
+
+        // array (
+        //     "MerchantID" => "2000132"
+        //     "MerchantTradeNo" => "T1615441501"
+        //     "PayAmt" => "100"
+        //     "PaymentDate" => "0001/01/01 00:00:00"
+        //     "PaymentType" => "_"
+        //     "PaymentTypeChargeFee" => "0"
+        //     "RedeemAmt" => "0"
+        //     "RtnCode" => "10100060"
+        //     "RtnMsg" => "訂單建立失敗，請回到原廠商頁面重新操作。"
+        //     "SimulatePaid" => "0"
+        //     "TradeAmt" => "100"
+        //     "TradeDate" => "2021/03/11 13:44:43"
+        //     "TradeNo" => "2103111344437272"
+        //     "CheckMacValue" => "83D048BABFC2EC19E7506F25B0DED5211ACC63807A3C350D9D6645D193B85DF7"
+        // );
+
+        
+        $order_no=$request->MerchantTradeNo;
+        if($request->RtnCode==1){
+            $order=Order::WHERE('order_no',$order_no)
+                            ->update([
+                                'order_status'=>1//交易成功
+                            ]);
+            $msg='Opay訂單交易成功';                
+        }else{
+            $order=Order::WHERE('order_no',$order_no)
+                            ->update([
+                                'order_status'=>2//交易失敗
+                            ]);
+            $msg='Opay訂單交易失敗';     
+        }                    
+        
+        $order=Order::WHERE('order_no',$order_no)->get(); //取得訂單資訊
+        //dd($order);
+        //$order_id=$order[0]->order_id;
+        //$OrderCarts=OrderCart::WHERE('order_id',$order_id)->get(); //取得訂單內購物車資訊
+        //dd($order_id);
+        return view('checkout_status',compact('order_no','msg'));
+
     }
 
 }
